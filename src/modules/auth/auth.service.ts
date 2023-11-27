@@ -49,13 +49,13 @@ export class AuthService {
     const user = await this.doesUserExists(email);
 
     if (!user) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException('Incorrect email or password');
     }
 
     const isMatched = await bcrypt.compare(password, user.password);
 
     if (!isMatched) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException('Incorrect email or password');
     }
 
     const token = this.getToken(user);
@@ -71,7 +71,6 @@ export class AuthService {
     const filter = { _id: id };
     const { password } = changePasswordDto;
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log(id, password);
 
     const update = { password: hashedPassword };
 
