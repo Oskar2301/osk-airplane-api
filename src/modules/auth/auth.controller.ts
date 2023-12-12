@@ -1,9 +1,9 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignUpDto } from '../../dto/signup.dto';
-import { SignInDto } from '../../dto/signin.dto';
-import { ForgotDto } from '../../dto/forgot.dto';
-import { ChangePasswordDto } from '../../dto/change-password.dto';
+import { SignUpDto } from '../../common/dto/auth/request/signup.dto';
+import { SignInDto } from '../../common/dto/auth/request/signin.dto';
+import { ForgotDto } from '../../common/dto/auth/request/forgot.dto';
+import { ChangePasswordDto } from '../../common/dto/auth/request/change-password.dto';
 import { GetUser } from '../../common/decorators/get-user.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
 

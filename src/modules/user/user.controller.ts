@@ -1,28 +1,35 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { GetUser } from '../../common/decorators/get-user.decorator';
-import { User } from '../../schemas/user.schema';
 import { UserService } from './user.service';
-import { UploadAvatarDto } from '../../dto/upload-avatar.dto';
-import {IUser} from "../../common/interfaces/user.interface";
+import { FileInterceptor } from '@nestjs/platform-express';
+import { storageAvatar } from '../files/storages/avatar.storage';
+import { User } from '../../schemas/user.schema';
+import { UserResponse } from '../../common/dto/user/response/user.response';
 
 @UseGuards(AuthGuard)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get('/get-info')
-  getInfo(
-      @GetUser() user,
-  ): Promise<IUser> {
+  @Get('get-info')
+  getInfo(@GetUser() user): Promise<UserResponse> {
     return this.userService.getUser(user.id);
   }
 
-  @Post('/update-avatar')
+  @Post('update-avatar')
+  @UseInterceptors(FileInterceptor('file', storageAvatar))
   updateAvatar(
     @GetUser() user,
-    @Body() { url }: UploadAvatarDto,
+    @UploadedFile() file: Express.Multer.File,
   ): Promise<User> {
-    return this.userService.updateAvatar(url, user.id);
+    return this.userService.updateAvatar(file, user.id);
   }
 }
