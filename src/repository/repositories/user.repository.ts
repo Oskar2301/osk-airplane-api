@@ -37,7 +37,7 @@ export class UserRepository {
 
   getToken(
     user: User & { _id: Types.ObjectId },
-    options?: { expiresIn: string },
+    options: { expiresIn: string } = { expiresIn: '7d' },
   ): string {
     return this.jwtService.sign(
       {

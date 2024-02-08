@@ -7,4 +7,12 @@ export class FilesController {
   async getPicture(@Param('filename') filename: string, @Res() res: Response) {
     res.sendFile(filename, { root: './src/assets/userAvatar' });
   }
+
+  @Get('trip/:filename')
+  async getTripPicture(
+    @Param('filename') filename: string,
+    @Res() res: Response,
+  ) {
+    res.sendFile(filename, { root: './src/assets/tripImage' });
+  }
 }

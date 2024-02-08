@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   Post,
@@ -13,6 +14,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { storageAvatar } from '../files/storages/avatar.storage';
 import { User } from '../../schemas/user.schema';
 import { UserResponse } from '../../common/dto/user/response/user.response';
+import { UpdateUserDto } from '../../common/dto/user/request/update-user.dto';
 
 @UseGuards(AuthGuard)
 @Controller('user')
@@ -31,5 +33,13 @@ export class UserController {
     @UploadedFile() file: Express.Multer.File,
   ): Promise<User> {
     return this.userService.updateAvatar(file, user.id);
+  }
+
+  @Post('update-user')
+  updateUser(
+    @GetUser() user,
+    @Body() updateInfo: UpdateUserDto,
+  ): Promise<User> {
+    return this.userService.updateUser(updateInfo, user.id);
   }
 }

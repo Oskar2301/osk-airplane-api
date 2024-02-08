@@ -5,14 +5,16 @@ import {
   Get,
   Param,
   Post,
+  UploadedFile,
   UseGuards,
-  UsePipes,
-  ValidationPipe,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { TripsService } from './trips.service';
 import { TripCreateDto } from '../../common/dto/trip-create.dto';
 import { Trip } from '../../schemas/trips.schema';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { tripStorage } from '../files/storages/trip.storage';
 
 @UseGuards(AuthGuard)
 @Controller('trips')
@@ -30,9 +32,17 @@ export class TripsController {
   }
 
   @Post('/add')
-  @UsePipes(new ValidationPipe())
-  addTrips(@Body() trip: TripCreateDto): Promise<Trip> {
-    return this.tripsService.createTrips(trip);
+  @UseInterceptors(FileInterceptor('file', tripStorage))
+  addTrips(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() trip: TripCreateDto,
+  ): Promise<Trip> {
+    return this.tripsService.createTrips(trip, file);
+  }
+
+  @Post('/search')
+  searchTrips(@Body() { search }: any): Promise<Trip[]> {
+    return this.tripsService.searchTrips(search);
   }
 
   @Delete('/delete/:id')

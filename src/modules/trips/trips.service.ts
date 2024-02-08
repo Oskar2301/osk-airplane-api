@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { TripCreateDto } from '../../common/dto/trip-create.dto';
 import { TripsRepository } from '../../repository/repositories/trips.repository';
 import { Trip } from '../../schemas/trips.schema';
+import { getBaseHost } from '../../config/config.service';
 
 @Injectable()
 export class TripsService {
@@ -24,8 +25,12 @@ export class TripsService {
   }
 
   // CREATE TRIPS
-  public async createTrips(trip: TripCreateDto): Promise<Trip> {
-    return await this.tripRepository.create(trip);
+  public async createTrips(
+    trip: TripCreateDto,
+    file: Express.Multer.File,
+  ): Promise<Trip> {
+    const avatarUrl = `${getBaseHost()}/files/trip/${file.filename}`;
+    return await this.tripRepository.create({ ...trip, image: avatarUrl });
   }
 
   // DELETE TRIP
@@ -37,5 +42,14 @@ export class TripsService {
     }
 
     return { success: true };
+  }
+
+  // SEARCH TRIP
+  public async searchTrips(value: string): Promise<Trip[]> {
+    if (!value) {
+      throw new NotFoundException('Value should not be empty');
+    }
+
+    return await this.tripRepository.findAll({ name: new RegExp(value, 'i') });
   }
 }
